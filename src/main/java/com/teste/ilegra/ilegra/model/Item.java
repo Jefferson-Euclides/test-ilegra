@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class Item {
 
-    private long id;
+    private Long id;
     private Integer quantity;
     private Double price;
 

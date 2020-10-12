@@ -1,7 +1,9 @@
 package com.teste.ilegra.ilegra.service.data;
 
 import com.teste.ilegra.ilegra.service.file.FileProcessor;
-import com.teste.ilegra.ilegra.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,18 +16,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 public class DataService {
+
+    @Autowired
+    FileProcessor fileProcessor;
+
+    @Value("${data.in}")
+    public String dataInPath;
 
     @Scheduled(fixedDelay = 30000)
     public void process() {
-        try (Stream<Path> walk = Files.walk(Paths.get(Constants.DATA_IN_PATH))) {
+        try (Stream<Path> walk = Files.walk(Paths.get(dataInPath))) {
 
-            List<Path> result = walk.filter(Files::isRegularFile)
+            List<String> result = walk.filter(Files::isRegularFile)
+                    .map(e -> e.toString())
                     .collect(Collectors.toList());
 
-            FileProcessor.processFiles(result);
+            fileProcessor.processFiles(result);
 
         } catch (IOException e) {
+            log.error("Error while processing files, maybe the format is wrong");
             e.printStackTrace();
         }
     }

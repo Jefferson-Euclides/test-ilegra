@@ -1,30 +1,33 @@
 package com.teste.ilegra.ilegra.service.file;
 
-import com.teste.ilegra.ilegra.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Component
+@Slf4j
 public class FileMove {
 
-    private static void move(String src, String dest ) {
-        Path result = null;
+    @Value("${data.processed}")
+    public String dataProcessedPath;
+
+    private void move(String src, String dest ) {
         try {
-            result = Files.move(Paths.get(src), Paths.get(dest));
+            Files.move(Paths.get(src), Paths.get(dest));
+            log.info("File moved to the Processed folder");
         } catch (IOException e) {
-            System.out.println("Exception while moving file: " + e.getMessage());
-        }
-        if(result != null) {
-            System.out.println("File moved successfully.");
-        }else{
-            System.out.println("File movement failed.");
+            log.error("Exception while moving file: " + e.getMessage());
         }
     }
 
-    public static void moveFile(Path file) {
-        move(file.toString(), Constants.DATA_PROCESSED_PATH + file.getFileName());
+    public void moveFile(String path) {
+        String fileName = path.substring(path.lastIndexOf("/"));
+
+        move(path, dataProcessedPath + fileName);
     }
 
 }

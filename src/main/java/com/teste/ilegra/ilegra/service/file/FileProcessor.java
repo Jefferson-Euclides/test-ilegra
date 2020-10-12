@@ -4,20 +4,31 @@ import com.teste.ilegra.ilegra.model.Client;
 import com.teste.ilegra.ilegra.model.Sale;
 import com.teste.ilegra.ilegra.model.Salesman;
 import com.teste.ilegra.ilegra.service.data.DataAnalyser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class FileProcessor {
 
-    public static void processFiles(List<Path> result) {
-        result.forEach(path -> {
+    @Autowired
+    FileMove fileMove;
+
+    @Autowired
+    DataAnalyser dataAnalyser;
+
+    @Autowired
+    FileReader fileReader;
+
+    public void processFiles(List<String> listPaths) {
+        listPaths.forEach(path -> {
             List<Client> listClients = new ArrayList<>();
             List<Salesman> listSalesman = new ArrayList<>();
             List<Sale> listSales = new ArrayList<>();
 
-            List<Object> listObjects = FileReader.read(path.toString());
+            List<Object> listObjects = fileReader.read(path);
 
             listObjects.forEach(object -> {
                 if (object.getClass() == Client.class) {
@@ -35,8 +46,8 @@ public class FileProcessor {
                 }
             });
 
-            DataAnalyser.analyzeFileData(listClients, listSalesman, listSales, path);
-            FileMove.moveFile(path);
+            dataAnalyser.analyzeFileData(listClients, listSalesman, listSales, path);
+            fileMove.moveFile(path);
         });
     }
 
