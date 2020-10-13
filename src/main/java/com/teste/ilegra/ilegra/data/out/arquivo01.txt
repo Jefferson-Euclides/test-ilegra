@@ -1,0 +1,4 @@
+Quantidade total de clientes: 2
+Quantidade total de vendedores: 2
+Maior venda: 10
+Pior vendedor: Paulo
